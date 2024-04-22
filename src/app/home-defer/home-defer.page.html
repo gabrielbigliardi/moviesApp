@@ -1,13 +1,62 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>homeDefer</ion-title>
+    <ion-title>
+      Trending Movies
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">homeDefer</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+
+  @defer (when !isLoading) {
+  <ion-list>
+
+    @for(movie of movies; track movie.id) {
+    <ion-item [routerLink]="['/details', movie.id]">
+
+      <ion-avatar slot="start">
+        <img [src]="imageBaseUrl + '/w92' + movie.poster_path" alt="poster" />
+      </ion-avatar>
+
+      <ion-label>
+        <h3>{{movie.title}}</h3>
+        <p>{{movie.release_date | date: 'y'}}</p>
+      </ion-label>
+
+      <ion-badge slot="end"> {{ movie.vote_average }} </ion-badge>
+
+    </ion-item>
+    } @empty {
+    @if (!isLoading) {
+    <ion-item lines="none">
+      <ion-label class="ion-text-center">No movies found</ion-label>
+    </ion-item>
+    }
+    }
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles"
+      loadingText="Carregando mais filmes"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+  } @placeholder {
+  <ion-list>
+    @for(i of dummyArray; track 1) {
+    <ion-item lines="none" class="ion-padding-bottom">
+      <ion-avatar slot="start">
+        <ion-skeleton-text></ion-skeleton-text>
+      </ion-avatar>
+      <ion-skeleton-text animated style="height: 40px" />
+    </ion-item>
+    }
+  </ion-list>
+  } @error {
+  <ion-alert header="Error" [message]="error" isOpen="true" buttons="['Ok']"></ion-alert>
+  } @loading(minimum 5s) {
+  <ion-text style="text-align: center; color: aqua; margin: 30px; background-color: blue;">Filmes carregados!
+    🎥🍿</ion-text>
+  }
+
+
+
 </ion-content>
